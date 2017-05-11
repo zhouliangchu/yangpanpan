@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <div class="box"></div>
+
+    <script src="../js/common/jquery.js"></script>
+    <script>
+        var arr = [];
+        function ajax(url){
+            var deffer = $.Deferred();
+            $.ajax({
+                url: url,
+                success: function(data){
+                    deffer.resolve(data);
+                },
+                error: function(){
+                    deffer.reject('reject');
+                }
+            });
+            return deffer.promise();
+        }
+
+        var fn1 = ajax('../../data/name.json');
+        var fn2 = ajax('../../data/age.json');
+        fn1.then(function(data1){
+            $.each(data1,function(i,obj){
+                arr.push(obj.name);
+            });
+            return fn2;
+        }).then(function(data2){
+            $.each(data2,function(i,obj){
+                arr.push(obj.age);
+            });
+            $.each(arr,function(i,obj){
+                var str = '<span>'+obj+' </span>'
+                $('.box').append($(str));
+            })
+        })
+    </script>
+</body>
+</html>
