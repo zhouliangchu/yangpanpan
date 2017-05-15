@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angular 服务</title>
+</head>
+<body ng-app="myapp">
+
+    <div ng-controller="serverCon"></div>
+
+    <script src="../js/common/jquery.js"></script>
+    <script src="../js/common/angular.js"></script>
+    <script>
+        var app = angular.module('myapp',[]);
+
+        app.controller('serverCon', function($scope,serverP,serverS,serverM,appS,appF,appP){
+            console.log(serverP);
+            console.log(serverS);
+            console.log(serverM);
+            console.log(appS);
+            console.log(appF);
+            console.log(appP);
+        });
+
+        // 内置服务: 30多个
+        // angular 中的服务相当于mvc架构的module层，也就是逻辑数据处理层
+        app.run(function($q,$http,$timeout,$interval){
+
+//            $http.get('/index').then(function(res){
+//                console.log(res.data);
+//            });
+
+            $timeout(function(){
+                console.log('延时3s');
+            },3000);
+
+            $interval(function(){
+                console.log('定时器');
+            },2000,5);
+            // 第3个参数为执行几次
+        });
+
+        // 自定义服务
+        app.config(function($provide){
+
+            // 方法一
+            $provide.provider('serverP',function(){
+                this.$get = function(){
+                    // 返回两种类型均可：引用类型和基本类型
+//                    return {
+//                        name: 'first message'
+//                    }
+                    // return 'first message'
+                    return [1,2,3]
+                }
+            });
+
+            // 方法二
+            $provide.service('serverS', function(){
+                // 自定义工厂service来自定义服务只能为引用类型即对象，不能为基本类型
+                return {
+                    name: 'zhangsan'
+                }
+            })
+
+            // 方法三
+            $provide.factory('serverM', function(){
+                // 两种类型都支持：基本类型 引用类型
+                // return [7,8,9]
+                // return 'lisi'
+                return {
+                    name: 'wangwu'
+                }
+            });
+        });
+
+        app.service('appS', function(){
+            return {
+                age: 18
+            }
+        });
+        app.factory('appF', function(){
+            return ['张三','李四','王五']
+        });
+        app.provider('appP',function(){
+            this.$get = function(){
+                return '小六'
+            }
+        })
+    </script>
+</body>
+</html>

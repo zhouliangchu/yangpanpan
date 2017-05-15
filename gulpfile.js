@@ -14,6 +14,8 @@ const rev = require('gulp-rev');// 对文件名加MD5后缀
 const revCollector = require('gulp-rev-collector');// 路径替换
 const url = require('url');
 const datajson = require('./data/main.js');
+const mockjson = require('./data/mock.js');
+const searchjson = require('./data/search.js');
 
 gulp.task('jsmin', function(){
     // 压缩js
@@ -31,6 +33,12 @@ gulp.task('jsmin', function(){
         .pipe(gulp.dest('./rev/js'))
 });
 
+gulp.task('commonjs', function(){
+    // 复制公共js框架到build中
+    gulp.src('src/js/common/*.js')
+        .pipe(gulp.dest('./build/js/common'));
+});
+
 gulp.task('cssmin', function(){
     // 压缩css
     gulp.src('src/css/*.sass')
@@ -42,18 +50,28 @@ gulp.task('cssmin', function(){
         .pipe(gulp.dest('./rev/css')); // 将rev-manifest.json保存到rev目录内
 });
 
+gulp.task('commoncss', function(){
+    // 复制公共js框架到build中
+    gulp.src('src/css/common/*.css')
+        .pipe(gulp.dest('./build/css/common'));
+});
+
 gulp.task('rev', function(){
-   gulp.src(['./rev/**/*.json','src/html/*.html'])
-    // 读取rev-manifest.json文件以及需要进行css名替换的文件
-       .pipe(revCollector({
-            replaceReved: true, // 设置replaceReved标识，用来说明模板中已经被替换的文件是否还能再被替换，默认是false
-            dirReplacements: {
-                'css': '../css',
-                'js': '../js'
-            }
-           // 标识目录替换的集合, 因为gulp-rev创建的manifest文件不包含任何目录信息
-       })) // 执行文件内css名的替换
-       .pipe(gulp.dest('./build/html'))
+    // MD5文件名的替换
+    setTimeout(function(){
+        gulp.src(['./rev/**/*.json','src/html/*.html'])
+            // 读取rev-manifest.json文件以及需要进行css名替换的文件
+            .pipe(revCollector({
+                replaceReved: true, // 设置replaceReved标识，用来说明模板中已经被替换的文件是否还能再被替换，默认是false
+                dirReplacements: {
+                    'css': '../css',
+                    'js': '../js'
+                }
+                // 标识目录替换的集合, 因为gulp-rev创建的manifest文件不包含任何目录信息
+            })) // 执行文件内css名的替换
+            .pipe(gulp.dest('./build/html'))
+    },1000);
+
 });
 
 gulp.task('imgmin', function(){
@@ -64,33 +82,56 @@ gulp.task('imgmin', function(){
 });
 
 gulp.task('html', function(){
+    // 复制html文件到build中
     gulp.src('src/html/*.html')
         .pipe(gulp.dest('./build/html'))
 });
 
-gulp.task('build',['jsmin','cssmin','html','imgmin','rev']);
+gulp.task('build',['jsmin','commonjs','cssmin','commoncss','html','imgmin','rev']);
 
 gulp.task('webserver',['build'], function(){
+    // 启动热服务
     gulp.watch('./src/css/*.sass',['cssmin']);
+    // 监测文件
     gulp.watch('./src/html/*.html', ['html']);
-    gulp.src('./build')
-        .pipe(webserver({
-            livereload: true,
-            directoryListing: true,
-            middleware: function (req,res,next){
-                const reqPath = url.parse(req.url).pathname;
-                const routes = datajson.data();
-                routes.forEach(function(i){
-                    console.log(i.route);
-                    console.log(reqPath);
-                    if(i.route == reqPath){
-                        i.handle (res,req,next);
-                    }
-                });
-                next();
-            },
-            open: 'html/index.html'
-        }))
+    setTimeout(function(){
+        gulp.src('./build')
+            .pipe(webserver({
+                livereload: true,
+                directoryListing: true,
+                middleware: function (req,res,next){
+                    const reqPath = url.parse(req.url).pathname;
+                    const routes = datajson.data();
+                    const mocks = mockjson.data();
+                    const searchs = searchjson.data();
+                    routes.forEach(function(i){
+                        console.log(i.route);
+                        console.log(reqPath);
+                        if(i.route == reqPath){
+                            i.handle (res,req,next);
+                        }
+                    });
+                    mocks.forEach(function(i){
+                       console.log(i.route);
+                       console.log(reqPath);
+                       if(i.route == reqPath){
+                           i.handle (res,req,next);
+                        }
+                    });
+                    searchs.forEach(function(i){
+                        console.log(i.route);
+                        console.log(reqPath);
+                        if(i.route == reqPath){
+                            i.handle (res,req,next);
+                        }
+                    });
+                    next();
+                },
+                open: 'html/search.html'
+                // 需要进行热启动的文件的路径
+            }))
+    },1000);
+
 });
 gulp.task('default', function() {
     // 将你的默认的任务代码放在这
