@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酷狗音乐</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <link rel="stylesheet" href="../css/common/reset.css">
+    <link rel="stylesheet" href="../css/common/common.css">
+    <link rel="stylesheet" href="../css/kugou.css">
+</head>
+<body ng-app="myapp">
+    <div class="container" ng-controller="kugouCon">
+        <header class="header">
+            <div class="top">
+                <div class="left">
+                    <img src="../images/kugou/imgs/logo.png">
+                </div>
+                <p>下载酷狗</p>
+                <div class="right">
+                    <img src="../images/kugou/imgs/search.png">
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="#/">新歌</a>
+                        <div class="line"></div>
+                    </li>
+                    <li><a href="#/hot">排行</a></li>
+                    <li><a href="#/list">歌单</a></li>
+                    <li><a href="#/singer">歌手</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section class="content">
+            <div ng-view></div>
+        </section>
+    </div>
+
+    <script src="../js/common/angular.js"></script>
+    <script src="../js/common/angular-route.js"></script>
+    <script>
+        var app = angular.module('myapp',['ngRoute']);
+
+        app.controller('kugouCon', function($rootScope,$scope,$http,topS,listS){
+            $scope.hotdata = topS;
+            $scope.listdata = listS;
+            $http.get('../../data/music_list.json').success(function(res){
+                $scope.datas = res.data;
+            });
+        });
+
+        app.service('topS', function(){
+            return [
+                {
+                    title: '酷狗飙升榜',
+                    src: '../images/kugou/hots/hot1.png'
+                },
+                {
+                    title: '酷狗TOP500',
+                    src: '../images/kugou/hots/hot2.png'
+                },
+                {
+                    title: '网络红歌榜',
+                    src: '../images/kugou/hots/hot3.png'
+                },
+                {
+                    title: 'DJ热歌榜',
+                    src: '../images/kugou/hots/hot4.png'
+                }
+            ]
+        });
+
+        app.service('listS', function(){
+            return [
+                {
+                    title: '梦想的声音 合辑',
+                    src: '../images/kugou/lists/list1.png'
+                },
+                {
+                    title: '围炉音乐会 合辑',
+                    src: '../images/kugou/lists/list2.png'
+                },
+                {
+                    title: '百首华语挚爱情歌',
+                    src: '../images/kugou/lists/list3.png'
+                },
+                {
+                    title: '最是粤语情深处',
+                    src: '../images/kugou/lists/list4.png'
+                }
+            ]
+        });
+
+        app.config(['$routeProvider', function($routeProvider){
+            $routeProvider.when('/',{
+                        templateUrl: 'kugou/new.html'
+                    })
+                    .when('/hot',{
+                        templateUrl: 'kugou/hot.html'
+                    })
+                    .when('/list',{
+                        templateUrl: 'kugou/list.html'
+                    })
+                    .when('/singer',{
+                        templateUrl: 'kugou/singer.html'
+                    })
+                    .otherwise({redirectTo: '/'})
+        }])
+    </script>
+</body>
+</html>

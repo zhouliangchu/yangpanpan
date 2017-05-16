@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angular 路由（左导航右内容）</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .box{
+            width: 600px;
+            height: 200px;
+            margin: 50px auto;
+        }
+        ul{
+            width: 80px;
+            float: left;
+        }
+        li{
+            height: 50px;
+            line-height: 50px;
+        }
+        .right{
+            width: 520px;
+            float: right;
+            text-align: center;
+            line-height: 200px;
+        }
+    </style>
+</head>
+<body ng-app="myapp">
+    <div class="box" ng-controller="navCon">
+        <ul>
+            <li><a href="#/">首页</a></li>
+            <li><a href="#/list">列表页</a></li>
+            <li><a href="#/product">产品页</a></li>
+            <li><a href="#/history">历史记录</a></li>
+            <li><a href="#/introduce">详细介绍</a></li>
+        </ul>
+        <div class="right" ng-view></div>
+    </div>
+
+    <script src="../../js/common/angular.js"></script>
+    <script src="../../js/common/angular-route.js"></script>
+    <script>
+        var app = angular.module('myapp',['ngRoute']);
+
+        app.controller('navCon', function($scope){
+
+        });
+        app.config(['$routeProvider',function($routeProvider){
+            $routeProvider.when('/',{template: '首页页面'})
+                    .when('/list',{template: '列表页页面'})
+                    .when('/product',{template: '产品页页面'})
+                    .when('/history',{template: '此处是历史记录'})
+                    .when('/introduce',{template: '这里是详细介绍'})
+                    .otherwise({redirectTo: '/'})
+        }])
+    </script>
+</body>
+</html>

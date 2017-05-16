@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>filter 过滤器</title>
+</head>
+<body ng-app="myapp">
+    <h4>过滤器可以使用一个管道字符（|）添加到表达式和指令中。</h4>
+
+    <div ng-controller="filterCon">
+
+        <h4>过滤器可以通过一个管道字符（|）和一个过滤器添加到表达式中。</h4>
+        <h2>表达式中添加过滤器</h2>
+        <h4>uppercase 格式化字符串为大写</h4>
+        <p>姓名：{{'yangPanPan' | uppercase}}</p>
+        <h4>lowercase 格式化字符串为小写</h4>
+        <p>姓名：{{'yangPanPan' | lowercase}}</p>
+
+        <h4>number 格式化（保留小数）</h4>
+        <p>{{13245.24653 | number: 2}}</p>
+
+        <h4>date 格式化</h4>
+        <p>时间常用的写法</p>
+        <p>{{today | date: 'y-M-d H:m:s'}}</p>
+        <p>默认的一些样式，较少使用</p>
+        <p>{{today | date: 'medium'}}</p>
+        <p>{{today | date: 'short'}}</p>
+        <p>{{today | date: 'fullDate'}}</p>
+        <p>{{today | date: 'longDate'}}</p>
+        <p>年</p>
+        <p>{{today | date: 'y'}}</p>
+        <p>{{today | date: 'yy'}}</p>
+        <p>{{today | date: 'yyyy'}}</p>
+        <p>月</p>
+        <p>{{today | date: 'M'}}</p>
+        <p>{{today | date: 'MM'}}</p>
+        <p>{{today | date: 'MMM'}}</p>
+        <p>{{today | date: 'MMMM'}}</p>
+        <p>天</p>
+        <p>{{today | date: 'd'}}</p>
+        <p>{{today | date: 'dd'}}</p>
+        <p>{{today | date: 'EEE'}}</p>
+        <p>{{today | date: 'EEEE'}}</p>
+        <p>小时</p>
+        <p>{{today | date: 'H'}}</p>
+        <p>{{today | date: 'HH'}}</p>
+        <p>{{today | date: 'h'}}</p>
+        <p>{{today | date: 'hh'}}</p>
+        <p>分</p>
+        <p>{{today | date: 'm'}}</p>
+        <p>{{today | date: 'mm'}}</p>
+        <p>秒</p>
+        <p>{{today | date: 's'}}</p>
+        <p>{{today | date: 'ss'}}</p>
+
+        <h4>currency 过滤器将数字格式化为货币格式：</h4>
+        <input type="number" ng-model="quantity">
+        <input type="number" ng-model="price">
+        <p>总价= {{(quantity*price) | currency}}</p>
+        <p>总价= {{(quantity*price) | currency:'￥'}}</p>
+
+        <h4>filter查找</h4>
+        <p>输入过滤器可以通过一个管道字符（|）和一个过滤器添加到指令中，该过滤器后跟一个冒号和一个模型名称。</p>
+        <p>filter 过滤器从数组中选择一个子集</p>
+        <p>{{
+            [
+                {'name':'张三','age':18},
+                {'name':'李四','age':20},
+                {'name':'王五','age':25}
+            ] | filter: {'age':20}
+            }}</p>
+
+        <h4>limitTo 截取</h4>
+        <p>从前面开始截取</p>
+        <p>{{'1234567890' | limitTo: 6}}</p>
+        <p>从后面开始截取</p>
+        <p>{{'1234567890' | limitTo: -6}}</p>
+
+        <h4>orderBy 排序</h4>
+        <p>默认正序，倒序加‘-’号</p>
+        <p>升序</p>
+        <p>{{
+                [
+                    {'name':'张三','age':18},
+                    {'name':'李四','age':20},
+                    {'name':'王五','age':25}
+                ] | orderBy: 'age':false
+            }}</p>
+        <p>降序</p>
+        <p>{{
+                [
+                    {'name':'张三','age':18},
+                    {'name':'李四','age':20},
+                    {'name':'王五','age':25}
+                ] | orderBy: 'age':true
+            }}</p>
+        <p>升序</p>
+        <p>{{
+                [
+                    {'name':'张三','age':18},
+                    {'name':'李四','age':20},
+                    {'name':'王五','age':25}
+                ] | orderBy: 'age'
+            }}</p>
+
+        <h2>向指令中添加过滤器</h2>
+        <p ng-repeat="item in data | orderBy: 'age'">{{item.name+':'+item.age}}</p>
+
+        <h2>自定义过滤器</h2>
+        <p>以下实例自定义一个过滤器 reverse，将字符串反转：</p>
+        <p>{{msg | reverse}}</p>
+
+    </div>
+
+    <script src="../js/common/angular.js"></script>
+    <script>
+        var app = angular.module('myapp',[]);
+
+        app.controller('filterCon', function($scope,data){
+            $scope.data = data;
+            $scope.msg = 'hello word';
+            $scope.today = new Date();
+        });
+
+        app.filter('reverse', function(){
+            return function(text){
+                return text.split('').reverse().join('');
+            }
+        });
+
+        app.service('data', function(){
+            return [
+                {'name':'张三','age':18},
+                {'name':'李四','age':20},
+                {'name':'王五','age':25}
+            ]
+        })
+    </script>
+</body>
+</html>

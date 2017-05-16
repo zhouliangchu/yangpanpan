@@ -101,33 +101,20 @@ gulp.task('webserver',['build'], function(){
                 directoryListing: true,
                 middleware: function (req,res,next){
                     const reqPath = url.parse(req.url).pathname;
-                    const routes = datajson.data();
-                    const mocks = mockjson.data();
-                    const searchs = searchjson.data();
-                    routes.forEach(function(i){
-                        console.log(i.route);
-                        console.log(reqPath);
-                        if(i.route == reqPath){
-                            i.handle (res,req,next);
-                        }
-                    });
-                    mocks.forEach(function(i){
-                       console.log(i.route);
-                       console.log(reqPath);
-                       if(i.route == reqPath){
-                           i.handle (res,req,next);
-                        }
-                    });
-                    searchs.forEach(function(i){
-                        console.log(i.route);
-                        console.log(reqPath);
-                        if(i.route == reqPath){
-                            i.handle (res,req,next);
-                        }
-                    });
+                    var arr = [datajson,mockjson,searchjson];
+                    for(var i=0;i<arr.length;i++){
+                        const routes = arr[i].data();
+                        routes.forEach(function(i){
+                            console.log(i.route);
+                            console.log(reqPath);
+                            if(i.route == reqPath){
+                                i.handle (res,req,next);
+                            }
+                        });
+                    }
                     next();
                 },
-                open: 'html/search.html'
+                open: 'html/defer.html'
                 // 需要进行热启动的文件的路径
             }))
     },1000);

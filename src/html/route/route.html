@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular Js 路由</title>
+    <style>
+        li{
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body ng-app="myapp">
+    <!--AngularJS 路由允许我们通过不同的 URL 访问不同的内容。-->
+    <!--通过 AngularJS 可以实现多视图的单页Web应用（single page web application，SPA）。-->
+    <!--通常我们的URL形式为 http://runoob.com/first/page，但在单页Web应用中 AngularJS 通过 # + 标记 实现，-->
+    <div>
+        <ul>
+            <li><a href="#/">首页</a></li>
+            <li><a href="#/list">列表</a></li>
+            <!--以‘/’传递参数-->
+            <li><a href="#/product/23456">产品页</a></li>
+            <li><a href="#/tab">tab页</a></li>
+            <!--以‘？’传递参数-->
+            <li><a href="#/home?id=1314&name=zhangsan">home页</a></li>
+        </ul>
+        <!--3、使用 ngView 指令。-->
+        <!--该 div 内的 HTML 内容会根据路由的变化而变化。-->
+        <div ng-view></div>
+    </div>
+
+    <script src="../../js/common/angular.js"></script>
+    <script src="../../js/common/angular-route.js"></script>
+    <script>
+//        1、载入了实现路由的 js 文件：angular-route.js。
+//        2、包含了 ngRoute 模块作为主应用模块的依赖模块。
+        var app = angular.module('myapp',['ngRoute']);
+
+        app.controller('routeCon', function($scope){
+
+        });
+
+//        4、配置 $routeProvider，AngularJS $routeProvider 用来定义路由规则。
+//            AngularJS 模块的 config 函数用于配置路由规则。通过使用 configAPI，我们请求把$routeProvider注入到我们的配置函数并且使用$routeProvider.whenAPI来定义我们的路由规则。
+//            $routeProvider 为我们提供了 when(path,object) & otherwise(object) 函数按顺序定义所有路由，函数包含两个参数:
+//                    第一个参数是 URL 或者 URL 正则规则。
+//                    第二个参数是路由配置对象。
+
+//        // 路由配置对象语法规则
+//        $routerProvider.when(url,{
+//                    template: string,
+//                    templateUrl: string,
+//                    controller: string,function 或 array,
+//                    controllerAs: string,
+//                    redirectTo: string,function,
+//                    resolve: object<key,function>
+//        })
+
+        // 参数说明
+        // template 只需要在ng-view中插入简单的html内容
+        app.config(['$routeProvider',function($routeProvider){
+            $routeProvider.when('/',{template: '这是首页页面'})
+                    .when('/list',{template: '这是列表页页面'})
+                    .when('/product/:id',{
+                        // 在地址栏中以“/”的方式传递参数
+                        templateUrl: 'page/product.html',
+                        controller: function(prepare,$route,$routeParams){
+                            console.log($routeParams.id);
+                            this.data = '却道故人心易变。';
+                            this.resdata = prepare;
+                        },
+                        // resolve: 指定当前controller所依赖的其他模块。
+                        resolve: {
+                            prepare: function($q){
+                                var defer = $q.defer();
+                                setTimeout(function(){
+                                    defer.resolve('请求数据成功');
+                                },3000);
+                                return defer.promise;
+                            }
+                        },
+                        // controllerAs: string类型，为controller指定别名。
+                        controllerAs: 'a'
+                    })
+                    .when('/home',{
+                        templateUrl: 'page/home.html',
+                        controller: function($scope,$route,$routeParams){
+                            $scope.msg = 'home页面';
+                            console.log($route);
+                            // 可以得到当前配置的所有路由
+                            console.log($routeParams);
+                            // 得到地址栏传递的所有参数
+                            console.log($routeParams.name);
+                        },
+                        controllerAs: 'b'
+                    })
+                    // templateUrl 在ng-view中插入模板文件
+                    .when('/tab',{
+                        templateUrl: 'page/tab.html',
+                        // controller: function、string或数组类型，在当前模板上执行的controller函数，生成新的scope。
+                        controller: 'routeCon'
+                    })
+                    // .otherwise({redirectTo: '/'});
+        }]);
+
+
+    </script>
+</body>
+</html>
